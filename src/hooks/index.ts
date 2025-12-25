@@ -5,3 +5,4 @@ export { useClients } from "./useClients";
 export { useInvoices } from "./useInvoices";
 export { default as usePrint } from "./usePrint";
 export type { UsePrintOptions, UsePrintReturn } from "./usePrint";
+export { useDownload } from "./useDownload";

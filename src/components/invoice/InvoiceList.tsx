@@ -7,6 +7,7 @@ export interface InvoiceListProps {
 	onEdit: (invoice: Invoice) => void;
 	onDelete: (invoiceId: string) => void;
 	onView: (invoice: Invoice) => void;
+	onDownload?: (invoice: Invoice) => void;
 	loading?: boolean;
 	className?: string;
 }
@@ -19,7 +20,15 @@ interface FilterOptions {
 }
 
 const InvoiceList: React.FC<InvoiceListProps> = React.memo(
-	({ invoices, onEdit, onDelete, onView, loading = false, className = "" }) => {
+	({
+		invoices,
+		onEdit,
+		onDelete,
+		onView,
+		onDownload,
+		loading = false,
+		className = "",
+	}) => {
 		const [searchQuery, setSearchQuery] = useState("");
 		const [sortField, setSortField] = useState<SortField>("issueDate");
 		const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -346,6 +355,17 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 													>
 														View
 													</Button>
+													{onDownload && (
+														<Button
+															variant="ghost"
+															size="sm"
+															onClick={() => onDownload(invoice)}
+															aria-label={`Download invoice ${invoice.invoiceNumber}`}
+															className="text-green-600 hover:text-green-700"
+														>
+															Download
+														</Button>
+													)}
 													<Button
 														variant="ghost"
 														size="sm"
