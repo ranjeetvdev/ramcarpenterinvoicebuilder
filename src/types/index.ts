@@ -175,20 +175,24 @@ export function validateInvoice(invoice: Partial<Invoice>): ValidationResult {
 		errors.push("Issue date must be a valid timestamp");
 	}
 
-	// Due date validation
-	if (typeof invoice.dueDate !== "number" || isNaN(invoice.dueDate)) {
-		errors.push("Due date must be a valid timestamp");
-	} else if (
-		typeof invoice.issueDate === "number" &&
-		invoice.dueDate < invoice.issueDate
-	) {
-		errors.push("Due date must be on or after the issue date");
+	// Due date validation (optional - only validate if provided)
+	if (invoice.dueDate !== undefined) {
+		if (typeof invoice.dueDate !== "number" || isNaN(invoice.dueDate)) {
+			errors.push("Due date must be a valid timestamp");
+		} else if (
+			typeof invoice.issueDate === "number" &&
+			invoice.dueDate < invoice.issueDate
+		) {
+			errors.push("Due date must be on or after the issue date");
+		}
 	}
 
-	// Status validation
-	const validStatuses = ["draft", "issued", "paid"];
-	if (!invoice.status || !validStatuses.includes(invoice.status)) {
-		errors.push("Status must be one of: draft, issued, paid");
+	// Status validation (optional - only validate if provided)
+	if (invoice.status !== undefined) {
+		const validStatuses = ["draft", "issued", "paid"];
+		if (!validStatuses.includes(invoice.status)) {
+			errors.push("Status must be one of: draft, issued, paid");
+		}
 	}
 
 	return {

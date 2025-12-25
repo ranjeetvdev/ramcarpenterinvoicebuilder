@@ -35,8 +35,9 @@ const InvoiceForm: React.FC<InvoiceFormProps> = React.memo(
 		// Initialize form data when invoice prop changes
 		useEffect(() => {
 			if (invoice) {
+				const { dueDate, stamp, ...invoiceWithoutUnwantedFields } = invoice;
 				setFormData({
-					...invoice,
+					...invoiceWithoutUnwantedFields,
 					issueDate: invoice.issueDate,
 				});
 			} else {
@@ -156,7 +157,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = React.memo(
 		const handleSubmit = async (e: React.FormEvent) => {
 			e.preventDefault();
 
-			// Validate form data
+			// Create invoice data without unwanted fields
 			const invoiceData = {
 				...formData,
 				id:
@@ -166,7 +167,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = React.memo(
 					invoice?.invoiceNumber || `INV-${String(Date.now()).slice(-6)}`,
 				createdAt: invoice?.createdAt || Date.now(),
 				updatedAt: Date.now(),
+				status: "issued", // Always set to issued
 			} as Invoice;
+
+			// Remove unwanted fields
+			delete (invoiceData as any).dueDate;
+			delete (invoiceData as any).stamp;
 
 			const validation = validateInvoice(invoiceData);
 			if (!validation.isValid) {
