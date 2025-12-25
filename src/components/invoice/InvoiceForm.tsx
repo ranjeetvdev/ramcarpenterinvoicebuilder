@@ -129,7 +129,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = React.memo(
 		const handleAddLineItem = useCallback((lineItem: Omit<LineItem, "id">) => {
 			const newLineItem: LineItem = {
 				...lineItem,
-				id: `line-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+				id: `line-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
 			};
 
 			setFormData((prev) => ({
@@ -162,7 +162,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = React.memo(
 				...formData,
 				id:
 					invoice?.id ||
-					`inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+					`inv-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
 				invoiceNumber:
 					invoice?.invoiceNumber || `INV-${String(Date.now()).slice(-6)}`,
 				createdAt: invoice?.createdAt || Date.now(),

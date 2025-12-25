@@ -11,17 +11,10 @@ export interface InvoiceListProps {
 	className?: string;
 }
 
-type SortField =
-	| "invoiceNumber"
-	| "clientName"
-	| "issueDate"
-	| "dueDate"
-	| "total"
-	| "status";
+type SortField = "invoiceNumber" | "clientName" | "issueDate" | "total";
 type SortDirection = "asc" | "desc";
 
 interface FilterOptions {
-	status: Invoice["status"] | "all";
 	dateRange: "all" | "last30" | "last90" | "thisYear";
 }
 
@@ -31,7 +24,6 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 		const [sortField, setSortField] = useState<SortField>("issueDate");
 		const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 		const [filters, setFilters] = useState<FilterOptions>({
-			status: "all",
 			dateRange: "all",
 		});
 
@@ -48,13 +40,6 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 						invoice.client.name.toLowerCase().includes(query) ||
 						invoice.client.email.toLowerCase().includes(query) ||
 						invoice.notes.toLowerCase().includes(query)
-				);
-			}
-
-			// Apply status filter
-			if (filters.status !== "all") {
-				filtered = filtered.filter(
-					(invoice) => invoice.status === filters.status
 				);
 			}
 
@@ -98,17 +83,9 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 						aValue = a.issueDate;
 						bValue = b.issueDate;
 						break;
-					case "dueDate":
-						aValue = a.dueDate;
-						bValue = b.dueDate;
-						break;
 					case "total":
 						aValue = a.total;
 						bValue = b.total;
-						break;
-					case "status":
-						aValue = a.status;
-						bValue = b.status;
 						break;
 					default:
 						aValue = a.issueDate;
@@ -148,7 +125,7 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 			(filterType: keyof FilterOptions, value: string) => {
 				setFilters((prev) => ({
 					...prev,
-					[filterType]: value,
+					[filterType]: value as FilterOptions[typeof filterType],
 				}));
 			},
 			[]
@@ -160,23 +137,6 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 
 		const formatCurrency = (amount: number) => {
 			return `₹${amount.toFixed(2)}`;
-		};
-
-		const getStatusBadgeClass = (status: Invoice["status"]) => {
-			switch (status) {
-				case "draft":
-					return "bg-gray-100 text-gray-800";
-				case "issued":
-					return "bg-yellow-100 text-yellow-800";
-				case "paid":
-					return "bg-green-100 text-green-800";
-				default:
-					return "bg-gray-100 text-gray-800";
-			}
-		};
-
-		const isOverdue = (invoice: Invoice) => {
-			return invoice.status === "issued" && invoice.dueDate < Date.now();
 		};
 
 		const SortButton: React.FC<{
@@ -250,23 +210,6 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 						<div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4">
 							<div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
 								<label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-									Status:
-								</label>
-								<select
-									value={filters.status}
-									onChange={(e) => handleFilterChange("status", e.target.value)}
-									className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 hover:border-gray-400 transition-all duration-200 ease-in-out min-w-0 flex-1 sm:flex-initial"
-									aria-label="Filter by status"
-								>
-									<option value="all">All Statuses</option>
-									<option value="draft">Draft</option>
-									<option value="issued">Issued</option>
-									<option value="paid">Paid</option>
-								</select>
-							</div>
-
-							<div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
-								<label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
 									Date Range:
 								</label>
 								<select
@@ -313,9 +256,7 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 								No invoices found
 							</h3>
 							<p className="mt-1 text-sm text-gray-500">
-								{searchQuery ||
-								filters.status !== "all" ||
-								filters.dateRange !== "all"
+								{searchQuery || filters.dateRange !== "all"
 									? "Try adjusting your search or filters."
 									: "Get started by creating your first invoice."}
 							</p>
@@ -351,19 +292,7 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 											scope="col"
 											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 										>
-											<SortButton field="dueDate">Due Date</SortButton>
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
 											<SortButton field="total">Total</SortButton>
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
-											<SortButton field="status">Status</SortButton>
 										</th>
 										<th
 											scope="col"
@@ -394,24 +323,6 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 													{formatDate(invoice.issueDate)}
 												</time>
 											</td>
-											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-												<time
-													dateTime={new Date(invoice.dueDate).toISOString()}
-													className={
-														isOverdue(invoice) ? "text-red-600 font-medium" : ""
-													}
-												>
-													{formatDate(invoice.dueDate)}
-													{isOverdue(invoice) && (
-														<span
-															className="ml-1 text-xs"
-															aria-label="This invoice is overdue"
-														>
-															(Overdue)
-														</span>
-													)}
-												</time>
-											</td>
 											<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
 												<span
 													aria-label={`Total amount: ${formatCurrency(
@@ -419,17 +330,6 @@ const InvoiceList: React.FC<InvoiceListProps> = React.memo(
 													)}`}
 												>
 													{formatCurrency(invoice.total)}
-												</span>
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap">
-												<span
-													className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(
-														invoice.status
-													)}`}
-													aria-label={`Invoice status: ${invoice.status}`}
-												>
-													{invoice.status.charAt(0).toUpperCase() +
-														invoice.status.slice(1)}
 												</span>
 											</td>
 											<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
