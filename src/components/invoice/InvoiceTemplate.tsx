@@ -169,7 +169,7 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
 						<div className="text-right">
 							<div className="mb-3 flex justify-center items-center">
 								<img
-									src="/public/RamCarpenterStampWithSignature.png"
+									src="/RamCarpenterStampWithSignature.png"
 									alt="Signature"
 									className="size-28"
 								/>
