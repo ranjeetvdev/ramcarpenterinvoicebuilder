@@ -8,7 +8,7 @@ export interface UsePrintOptions {
 
 export interface UsePrintReturn {
 	isPrinting: boolean;
-	printElement: (element: HTMLElement) => Promise<void>;
+	printElement: (element: HTMLElement, filename?: string) => Promise<void>;
 	printPage: () => Promise<void>;
 	error: Error | null;
 }
@@ -21,12 +21,12 @@ export function usePrint(options: UsePrintOptions = {}): UsePrintReturn {
 	const [error, setError] = useState<Error | null>(null);
 
 	const printElement = useCallback(
-		async (element: HTMLElement) => {
+		async (element: HTMLElement, filename?: string) => {
 			setIsPrinting(true);
 			setError(null);
 
 			try {
-				printInvoice(element);
+				printInvoice(element, filename);
 				options.onSuccess?.();
 			} catch (err) {
 				const printError =

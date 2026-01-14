@@ -207,7 +207,7 @@ This implementation plan converts the invoice table enhancement design into disc
     - Test form interactions with new fields
 
 - [x] 9. Checkpoint - Ensure all tests pass
-  - Ensure all tests pass, ask the user if questions arise.
+  - [x] Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
 

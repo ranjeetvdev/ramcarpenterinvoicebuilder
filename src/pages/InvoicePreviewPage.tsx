@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { InvoiceTemplate } from "../components/invoice";
 import { useInvoices } from "../hooks/useInvoices";
 import { usePrint } from "../hooks/usePrint";
+import { generateInvoiceFilename } from "../utils";
 import type { Invoice } from "../types";
 
 export default function InvoicePreviewPage() {
@@ -24,7 +25,12 @@ export default function InvoicePreviewPage() {
 
 	const handlePrint = async () => {
 		if (invoice && invoiceRef.current) {
-			await printElement(invoiceRef.current);
+			// Generate filename from client name and address
+			const filename = generateInvoiceFilename(
+				invoice.client.name,
+				invoice.client.address
+			);
+			await printElement(invoiceRef.current, filename);
 		}
 	};
 

@@ -198,8 +198,13 @@ export function calculateInvoiceTotals(
 
 /**
  * Print an invoice by opening a new window with the invoice content
+ * @param invoiceElement - The HTML element containing the invoice
+ * @param filename - Optional filename for the print dialog (client name + address)
  */
-export function printInvoice(invoiceElement: HTMLElement): void {
+export function printInvoice(
+	invoiceElement: HTMLElement,
+	filename?: string
+): void {
 	// Create a new window for printing
 	const printWindow = window.open("", "_blank", "width=800,height=600");
 
@@ -230,12 +235,15 @@ export function printInvoice(invoiceElement: HTMLElement): void {
 		})
 		.join("");
 
+	// Set the document title for the filename
+	const documentTitle = filename || "Invoice";
+
 	// Create the print document
 	const printDocument = `
 		<!DOCTYPE html>
 		<html>
 		<head>
-			<title>Invoice</title>
+			<title>${documentTitle}</title>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
 			${stylesheets}
@@ -266,6 +274,31 @@ export function printInvoice(invoiceElement: HTMLElement): void {
 			printWindow.close();
 		};
 	};
+}
+
+/**
+ * Generate a filename for an invoice based on client name and address
+ * @param clientName - The client's name
+ * @param clientAddress - The client's address
+ * @returns A sanitized filename string
+ */
+export function generateInvoiceFilename(
+	clientName: string,
+	clientAddress: string
+): string {
+	// Combine name and address
+	const combined = `${clientName}_${clientAddress}`;
+
+	// Remove or replace invalid filename characters
+	// Replace spaces with underscores, remove special characters
+	const sanitized = combined
+		.replace(/[<>:"/\\|?*#,;]/g, "") // Remove invalid and problematic characters
+		.replace(/\s+/g, "_") // Replace spaces with underscores
+		.replace(/_{2,}/g, "_") // Replace multiple underscores with single
+		.replace(/^_|_$/g, "") // Remove leading/trailing underscores
+		.substring(0, 100); // Limit length to 100 characters
+
+	return sanitized || "Invoice";
 }
 
 /**

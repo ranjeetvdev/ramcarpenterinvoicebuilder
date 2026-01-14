@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import InvoiceTemplate, { type InvoiceTemplateProps } from "./InvoiceTemplate";
 import Button from "../common/Button";
-import { printInvoice } from "../../utils";
+import { printInvoice, generateInvoiceFilename } from "../../utils";
 
 export interface PrintableInvoiceProps extends InvoiceTemplateProps {
 	showPrintButton?: boolean;
@@ -29,7 +29,12 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
 		}
 
 		try {
-			printInvoice(invoiceRef.current);
+			// Generate filename from client name and address
+			const filename = generateInvoiceFilename(
+				invoice.client.name,
+				invoice.client.address
+			);
+			printInvoice(invoiceRef.current, filename);
 			onPrintSuccess?.();
 		} catch (error) {
 			const printError =
