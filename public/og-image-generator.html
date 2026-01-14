@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>OG Image Generator - Ram Carpenter</title>
+		<style>
+			body {
+				margin: 0;
+				padding: 20px;
+				font-family: Arial, sans-serif;
+				background: #f0f0f0;
+			}
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				text-align: center;
+			}
+			h1 {
+				color: #1e3a8a;
+				margin-bottom: 10px;
+			}
+			.instructions {
+				background: #fff;
+				padding: 20px;
+				border-radius: 8px;
+				margin: 20px 0;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			.instructions ol {
+				text-align: left;
+				max-width: 600px;
+				margin: 0 auto;
+			}
+			.instructions li {
+				margin: 10px 0;
+			}
+			canvas {
+				border: 2px solid #333;
+				margin: 20px 0;
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			}
+			button {
+				background: #3b82f6;
+				color: white;
+				border: none;
+				padding: 15px 30px;
+				font-size: 16px;
+				border-radius: 8px;
+				cursor: pointer;
+				margin: 10px;
+				font-weight: 600;
+			}
+			button:hover {
+				background: #2563eb;
+			}
+			.success {
+				color: #059669;
+				font-weight: 600;
+				margin-top: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>🛠️ Ram Carpenter OG Image Generator</h1>
+
+			<div class="instructions">
+				<h2>Instructions:</h2>
+				<ol>
+					<li>The image is automatically generated below (1200x630px)</li>
+					<li>Click the "Download PNG" button to save it</li>
+					<li>
+						Save the file as <strong>og-image.png</strong> in your
+						<strong>public</strong> folder
+					</li>
+					<li>
+						The image is optimized for WhatsApp, Twitter, and Facebook sharing
+					</li>
+				</ol>
+			</div>
+
+			<canvas id="canvas" width="1200" height="630"></canvas>
+
+			<button onclick="downloadImage()">📥 Download PNG</button>
+			<div id="message"></div>
+		</div>
+
+		<script>
+			const canvas = document.getElementById("canvas");
+			const ctx = canvas.getContext("2d");
+
+			function drawImage() {
+				// Background gradient
+				const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+				gradient.addColorStop(0, "#1e3a8a");
+				gradient.addColorStop(1, "#3b82f6");
+				ctx.fillStyle = gradient;
+				ctx.fillRect(0, 0, 1200, 630);
+
+				// Decorative circles
+				ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+				ctx.beginPath();
+				ctx.arc(100, 100, 150, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(1100, 530, 200, 0, Math.PI * 2);
+				ctx.fill();
+
+				// Main content container
+				ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+				ctx.beginPath();
+				ctx.roundRect(80, 140, 1040, 350, 20);
+				ctx.fill();
+
+				// Invoice icon background
+				ctx.fillStyle = "#3b82f6";
+				ctx.strokeStyle = "#1e3a8a";
+				ctx.lineWidth = 3;
+				ctx.beginPath();
+				ctx.roundRect(140, 200, 80, 100, 8);
+				ctx.fill();
+				ctx.stroke();
+
+				// Icon lines (invoice lines)
+				ctx.strokeStyle = "#ffffff";
+				ctx.lineWidth = 3;
+				ctx.lineCap = "round";
+
+				ctx.beginPath();
+				ctx.moveTo(155, 225);
+				ctx.lineTo(205, 225);
+				ctx.stroke();
+
+				ctx.beginPath();
+				ctx.moveTo(155, 245);
+				ctx.lineTo(205, 245);
+				ctx.stroke();
+
+				ctx.beginPath();
+				ctx.moveTo(155, 265);
+				ctx.lineTo(190, 265);
+				ctx.stroke();
+
+				// Text content
+				ctx.fillStyle = "#1e3a8a";
+				ctx.font = "bold 64px Arial, sans-serif";
+				ctx.fillText("Ram Carpenter", 280, 260);
+
+				ctx.fillStyle = "#3b82f6";
+				ctx.font = "600 48px Arial, sans-serif";
+				ctx.fillText("Invoice Builder", 280, 330);
+
+				ctx.fillStyle = "#64748b";
+				ctx.font = "28px Arial, sans-serif";
+				ctx.fillText("Professional invoicing made simple", 280, 400);
+
+				// Bottom accent bar
+				ctx.fillStyle = "#3b82f6";
+				ctx.beginPath();
+				ctx.roundRect(80, 520, 200, 6, 3);
+				ctx.fill();
+			}
+
+			function downloadImage() {
+				const link = document.createElement("a");
+				link.download = "og-image.png";
+				link.href = canvas.toDataURL("image/png");
+				link.click();
+
+				document.getElementById("message").innerHTML =
+					'<p class="success">✅ Image downloaded! Save it as "og-image.png" in your public folder.</p>';
+			}
+
+			// Draw the image when page loads
+			drawImage();
+		</script>
+	</body>
+</html>
