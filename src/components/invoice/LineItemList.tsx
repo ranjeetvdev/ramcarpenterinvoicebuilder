@@ -68,42 +68,54 @@ const LineItemList: React.FC<LineItemListProps> = ({
 
 	return (
 		<div className={className}>
-			<div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+			<div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
 				<table className="min-w-full divide-y divide-gray-300">
 					<thead className="bg-gray-50">
 						<tr>
 							<th
 								scope="col"
-								className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16"
+								className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12 sm:w-16"
 							>
-								Sr. No.
+								<span className="hidden sm:inline">Sr. No.</span>
+								<span className="sm:hidden">#</span>
 							</th>
 							<th
 								scope="col"
-								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+								className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 							>
 								Description
 							</th>
 							<th
 								scope="col"
-								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+								className="px-2 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16 sm:w-20"
 							>
-								Unit Price
+								<span className="hidden sm:inline">Quantity</span>
+								<span className="sm:hidden">Qty</span>
 							</th>
 							<th
 								scope="col"
-								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+								className="px-2 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-20 sm:w-28"
 							>
-								Quantity
+								<span className="hidden sm:inline">Rate</span>
+								<span className="sm:hidden">Rate</span>
 							</th>
 							<th
 								scope="col"
-								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+								className="px-2 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12 sm:w-16"
 							>
-								Total
+								Per
+							</th>
+							<th
+								scope="col"
+								className="px-2 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-20 sm:w-28"
+							>
+								Amount
 							</th>
 							{showActions && (
-								<th scope="col" className="relative px-6 py-3">
+								<th
+									scope="col"
+									className="relative px-3 sm:px-6 py-3 w-16 sm:w-auto"
+								>
 									<span className="sr-only">Actions</span>
 								</th>
 							)}
@@ -115,35 +127,52 @@ const LineItemList: React.FC<LineItemListProps> = ({
 								key={item.id}
 								className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
 							>
-								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-medium">
+								<td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-medium">
 									{index + 1}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-									<div className="max-w-xs truncate" title={item.description}>
+								<td className="px-3 sm:px-6 py-4 text-sm text-gray-900">
+									<div
+										className="max-w-[120px] sm:max-w-xs truncate"
+										title={item.description}
+									>
 										{item.description}
 									</div>
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-									₹{item.unitPrice.toFixed(2)}
+								<td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+									<div>
+										<div className="font-medium">{item.quantity}</div>
+										{item.totalQuantity && (
+											<div className="text-xs text-gray-600 mt-1 font-normal italic bg-gray-50 px-1 sm:px-2 py-1 rounded border-l-2 border-blue-200">
+												<span className="hidden sm:inline">Total: </span>
+												{item.totalQuantity}
+												{item.unit && <span className="ml-1">{item.unit}</span>}
+											</div>
+										)}
+									</div>
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-									{item.quantity}
+								<td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+									<span className="hidden sm:inline">₹</span>
+									{item.unitPrice.toFixed(2)}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+								<td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+									<span className="text-xs sm:text-sm">{item.unit || ""}</span>
+								</td>
+								<td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
 									₹{item.total.toFixed(2)}
 								</td>
 								{showActions && (
-									<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-										<div className="flex space-x-2 justify-end">
+									<td className="px-2 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+										<div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2 justify-end">
 											{onEdit && (
 												<Button
 													variant="ghost"
 													size="sm"
 													onClick={() => handleEdit(item)}
 													aria-label={`Edit ${item.description}`}
+													className="p-1 sm:p-2"
 												>
 													<svg
-														className="h-4 w-4"
+														className="h-3 w-3 sm:h-4 sm:w-4"
 														fill="none"
 														viewBox="0 0 24 24"
 														stroke="currentColor"
@@ -163,9 +192,10 @@ const LineItemList: React.FC<LineItemListProps> = ({
 													size="sm"
 													onClick={() => handleRemove(item.id)}
 													aria-label={`Remove ${item.description}`}
+													className="p-1 sm:p-2"
 												>
 													<svg
-														className="h-4 w-4"
+														className="h-3 w-3 sm:h-4 sm:w-4"
 														fill="none"
 														viewBox="0 0 24 24"
 														stroke="currentColor"

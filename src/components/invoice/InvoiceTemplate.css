@@ -103,6 +103,75 @@
 	}
 }
 
+/* Mobile-specific responsive styles */
+@media screen and (max-width: 640px) {
+	.invoice-template {
+		padding: 1rem !important;
+		margin: 0 !important;
+	}
+
+	.invoice-template .grid-cols-2 {
+		grid-template-columns: 1fr !important;
+		gap: 1rem !important;
+	}
+
+	.invoice-template .text-right {
+		text-align: left !important;
+	}
+
+	.invoice-template .invoice-dates {
+		text-align: left !important;
+		margin-top: 1rem;
+	}
+
+	/* Adjust header for mobile */
+	.invoice-template header .flex {
+		flex-direction: column !important;
+		align-items: flex-start !important;
+		gap: 1rem;
+	}
+
+	.invoice-template .invoice-header {
+		text-align: left !important;
+	}
+
+	/* Mobile table adjustments */
+	.line-items table {
+		font-size: 0.75rem !important;
+	}
+
+	.line-items th,
+	.line-items td {
+		padding: 0.25rem !important;
+	}
+
+	/* Totals section mobile */
+	.totals .w-72 {
+		width: 100% !important;
+	}
+
+	/* Signatory section mobile */
+	.signatory-section .flex {
+		justify-content: center !important;
+	}
+
+	.authorized-signatory img {
+		width: 6rem !important;
+		height: 6rem !important;
+	}
+}
+
+/* Tablet responsive styles */
+@media screen and (min-width: 641px) and (max-width: 1024px) {
+	.invoice-template {
+		padding: 1.5rem !important;
+	}
+
+	.line-items table {
+		font-size: 0.875rem !important;
+	}
+}
+
 /* Screen-only styles */
 @media screen {
 	.invoice-template {

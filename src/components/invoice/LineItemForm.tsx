@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import type { LineItem } from "../../types";
 import { validateLineItem } from "../../types";
+import { calculateLineItemTotal } from "../../utils";
 import { Button, Input } from "../common";
 
 export interface LineItemFormProps {
@@ -22,24 +23,40 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 		description: initialData?.description || "",
 		quantity: initialData?.quantity || 1,
 		unitPrice: initialData?.unitPrice || 0,
+		unit: initialData?.unit || "",
+		totalQuantity: initialData?.totalQuantity || undefined,
 	});
 
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const calculateTotal = useCallback((quantity: number, unitPrice: number) => {
-		return quantity * unitPrice;
-	}, []);
+	const calculateTotal = useCallback(
+		(quantity: number, unitPrice: number, totalQuantity?: number) => {
+			return calculateLineItemTotal(quantity, unitPrice, totalQuantity);
+		},
+		[]
+	);
 
-	const total = calculateTotal(formData.quantity, formData.unitPrice);
+	const total = calculateTotal(
+		formData.quantity,
+		formData.unitPrice,
+		formData.totalQuantity
+	);
 
 	const handleInputChange = useCallback(
 		(field: keyof typeof formData) => {
 			return (e: React.ChangeEvent<HTMLInputElement>) => {
-				const value =
-					field === "description"
-						? e.target.value
-						: parseFloat(e.target.value) || 0;
+				let value: string | number | undefined;
+
+				if (field === "description" || field === "unit") {
+					value = e.target.value;
+				} else if (field === "totalQuantity") {
+					// Handle totalQuantity as optional number
+					const numValue = parseFloat(e.target.value);
+					value = e.target.value === "" ? undefined : numValue || 0;
+				} else {
+					value = parseFloat(e.target.value) || 0;
+				}
 
 				setFormData((prev) => ({
 					...prev,
@@ -63,7 +80,14 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 
 		const lineItemData = {
 			...formData,
-			total: calculateTotal(formData.quantity, formData.unitPrice),
+			// Handle empty unit field gracefully
+			unit: formData.unit.trim() === "" ? undefined : formData.unit,
+			// totalQuantity is already undefined if empty
+			total: calculateTotal(
+				formData.quantity,
+				formData.unitPrice,
+				formData.totalQuantity
+			),
 		};
 
 		// Validate the line item
@@ -76,8 +100,12 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 					fieldErrors.description = error;
 				} else if (error.includes("Quantity")) {
 					fieldErrors.quantity = error;
-				} else if (error.includes("Unit price")) {
+				} else if (error.includes("Rate")) {
 					fieldErrors.unitPrice = error;
+				} else if (error.includes("Unit")) {
+					fieldErrors.unit = error;
+				} else if (error.includes("Total quantity")) {
+					fieldErrors.totalQuantity = error;
 				} else {
 					fieldErrors.general = error;
 				}
@@ -95,6 +123,8 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 				description: "",
 				quantity: 1,
 				unitPrice: 0,
+				unit: "",
+				totalQuantity: undefined,
 			});
 			setErrors({});
 		} catch (error) {
@@ -109,6 +139,8 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 			description: "",
 			quantity: 1,
 			unitPrice: 0,
+			unit: "",
+			totalQuantity: undefined,
 		});
 		setErrors({});
 	}, []);
@@ -121,7 +153,7 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 				</div>
 			)}
 
-			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
 				<div className="md:col-span-2">
 					<Input
 						label="Description"
@@ -135,7 +167,19 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 
 				<div>
 					<Input
-						label="Unit Price (₹)"
+						label="Quantity"
+						type="number"
+						value={formData.quantity.toString()}
+						onChange={handleInputChange("quantity")}
+						error={errors.quantity}
+						min="0.01"
+						step="0.01"
+					/>
+				</div>
+
+				<div>
+					<Input
+						label="Rate (₹)"
 						type="number"
 						value={formData.unitPrice.toString()}
 						onChange={handleInputChange("unitPrice")}
@@ -147,13 +191,27 @@ const LineItemForm: React.FC<LineItemFormProps> = ({
 
 				<div>
 					<Input
-						label="Quantity"
+						label="Per (unit)"
+						type="text"
+						value={formData.unit}
+						onChange={handleInputChange("unit")}
+						error={errors.unit}
+						placeholder="sq ft, ft, NO, piece"
+					/>
+				</div>
+			</div>
+
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div>
+					<Input
+						label="Total Quantity (optional)"
 						type="number"
-						value={formData.quantity.toString()}
-						onChange={handleInputChange("quantity")}
-						error={errors.quantity}
+						value={formData.totalQuantity?.toString() || ""}
+						onChange={handleInputChange("totalQuantity")}
+						error={errors.totalQuantity}
 						min="0.01"
 						step="0.01"
+						placeholder="Additional quantity tracking"
 					/>
 				</div>
 			</div>

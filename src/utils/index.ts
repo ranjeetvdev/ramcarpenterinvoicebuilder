@@ -75,21 +75,33 @@ export function isValidTimestamp(timestamp: number): boolean {
 import type { LineItem } from "../types";
 
 /**
- * Calculate the total for a single line item (quantity * unitPrice)
+ * Calculate the total for a single line item
+ * Uses totalQuantity if provided, otherwise falls back to quantity
  */
 export function calculateLineItemTotal(
 	quantity: number,
-	unitPrice: number
+	unitPrice: number,
+	totalQuantity?: number
 ): number {
 	if (typeof quantity !== "number" || typeof unitPrice !== "number") {
-		throw new Error("Quantity and unit price must be numbers");
+		throw new Error("Quantity and rate must be numbers");
 	}
 	if (quantity < 0 || unitPrice < 0) {
-		throw new Error("Quantity and unit price must be non-negative");
+		throw new Error("Quantity and rate must be non-negative");
+	}
+	if (
+		totalQuantity !== undefined &&
+		(typeof totalQuantity !== "number" || totalQuantity < 0)
+	) {
+		throw new Error("Total quantity must be a non-negative number");
 	}
 
+	// Use totalQuantity if provided, otherwise use main quantity
+	const calculationQuantity =
+		totalQuantity !== undefined ? totalQuantity : quantity;
+
 	// Round to 2 decimal places to handle floating point precision
-	return Math.round(quantity * unitPrice * 100) / 100;
+	return Math.round(calculationQuantity * unitPrice * 100) / 100;
 }
 
 /**
@@ -101,7 +113,11 @@ export function calculateInvoiceSubtotal(lineItems: LineItem[]): number {
 	}
 
 	const subtotal = lineItems.reduce((sum, item) => {
-		const itemTotal = calculateLineItemTotal(item.quantity, item.unitPrice);
+		const itemTotal = calculateLineItemTotal(
+			item.quantity,
+			item.unitPrice,
+			item.totalQuantity
+		);
 		return sum + itemTotal;
 	}, 0);
 
@@ -156,7 +172,11 @@ export function calculateInvoiceTotals(
 	// Calculate totals for each line item
 	const lineItemsWithTotals: LineItem[] = lineItems.map((item) => ({
 		...item,
-		total: calculateLineItemTotal(item.quantity, item.unitPrice),
+		total: calculateLineItemTotal(
+			item.quantity,
+			item.unitPrice,
+			item.totalQuantity
+		),
 	}));
 
 	// Calculate subtotal

@@ -78,24 +78,30 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
 			</div>
 
 			{/* Line Items Table */}
-			<div className="line-items mb-6">
-				<table className="w-full border-collapse">
+			<div className="line-items mb-6 overflow-x-auto">
+				<table className="w-full border-collapse min-w-[600px]">
 					<thead>
 						<tr className="bg-gray-800 text-white">
-							<th className="text-center py-2 px-3 font-semibold text-sm w-12">
+							<th className="text-center py-2 px-2 sm:px-3 font-semibold text-xs sm:text-sm w-8 sm:w-12">
 								#
 							</th>
-							<th className="text-left py-2 px-3 font-semibold text-sm">
+							<th className="text-left py-2 px-2 sm:px-3 font-semibold text-xs sm:text-sm">
 								Particulars
 							</th>
-							<th className="text-right py-2 px-3 font-semibold text-sm w-28">
-								Unit Price
+							<th className="text-right py-2 px-2 sm:px-3 font-semibold text-xs sm:text-sm w-16 sm:w-20">
+								<span className="hidden sm:inline">Qty.</span>
+								<span className="sm:hidden">Q</span>
 							</th>
-							<th className="text-right py-2 px-3 font-semibold text-sm w-20">
-								Qty.
+							<th className="text-right py-2 px-2 sm:px-3 font-semibold text-xs sm:text-sm w-20 sm:w-28">
+								<span className="hidden sm:inline">Rate</span>
+								<span className="sm:hidden">Rate</span>
 							</th>
-							<th className="text-right py-2 px-3 font-semibold text-sm w-28">
-								Amount Rs.
+							<th className="text-center py-2 px-2 sm:px-3 font-semibold text-xs sm:text-sm w-12 sm:w-16">
+								Per
+							</th>
+							<th className="text-right py-2 px-2 sm:px-3 font-semibold text-xs sm:text-sm w-20 sm:w-28">
+								<span className="hidden sm:inline">Amount Rs.</span>
+								<span className="sm:hidden">Amount</span>
 							</th>
 						</tr>
 					</thead>
@@ -105,19 +111,33 @@ const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
 								key={item.id}
 								className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
 							>
-								<td className="py-2 px-3 text-center text-gray-900 border-b border-gray-200 font-medium text-sm">
+								<td className="py-2 px-2 sm:px-3 text-center text-gray-900 border-b border-gray-200 font-medium text-xs sm:text-sm">
 									{index + 1}.
 								</td>
-								<td className="py-2 px-3 text-gray-900 border-b border-gray-200 text-sm">
-									{item.description}
+								<td className="py-2 px-2 sm:px-3 text-gray-900 border-b border-gray-200 text-xs sm:text-sm">
+									<div
+										className="max-w-[120px] sm:max-w-none truncate sm:truncate-none"
+										title={item.description}
+									>
+										{item.description}
+									</div>
 								</td>
-								<td className="py-2 px-3 text-right text-gray-900 border-b border-gray-200 text-sm">
+								<td className="py-2 px-2 sm:px-3 text-right text-gray-900 border-b border-gray-200 text-xs sm:text-sm">
+									<div className="font-medium">{item.quantity}</div>
+									{item.totalQuantity && (
+										<div className="text-xs text-gray-600 italic font-normal bg-gray-100 px-1 py-0.5 rounded mt-1 border-l-2 border-blue-300">
+											({item.totalQuantity}
+											{item.unit && <span className="ml-1">{item.unit}</span>})
+										</div>
+									)}
+								</td>
+								<td className="py-2 px-2 sm:px-3 text-right text-gray-900 border-b border-gray-200 text-xs sm:text-sm">
 									{formatCurrency(item.unitPrice)}
 								</td>
-								<td className="py-2 px-3 text-right text-gray-900 border-b border-gray-200 text-sm">
-									{item.quantity}
+								<td className="py-2 px-2 sm:px-3 text-center text-gray-900 border-b border-gray-200 text-xs sm:text-sm">
+									{item.unit || ""}
 								</td>
-								<td className="py-2 px-3 text-right font-medium text-gray-900 border-b border-gray-200 text-sm">
+								<td className="py-2 px-2 sm:px-3 text-right font-medium text-gray-900 border-b border-gray-200 text-xs sm:text-sm">
 									{formatCurrency(item.total)}
 								</td>
 							</tr>

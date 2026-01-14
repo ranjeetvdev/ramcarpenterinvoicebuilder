@@ -5,6 +5,7 @@ import {
 	generateId,
 	getCurrentTimestamp,
 	calculateInvoiceTotals,
+	calculateLineItemTotal,
 } from "../utils";
 
 /**
@@ -59,7 +60,11 @@ export class InvoiceManager {
 		const itemValidation = validateLineItem({
 			...item,
 			id: generateId(),
-			total: item.quantity * item.unitPrice,
+			total: calculateLineItemTotal(
+				item.quantity,
+				item.unitPrice,
+				item.totalQuantity
+			),
 		});
 
 		if (!itemValidation.isValid) {
@@ -69,7 +74,11 @@ export class InvoiceManager {
 		const newLineItem: LineItem = {
 			...item,
 			id: generateId(),
-			total: item.quantity * item.unitPrice,
+			total: calculateLineItemTotal(
+				item.quantity,
+				item.unitPrice,
+				item.totalQuantity
+			),
 		};
 
 		const updatedInvoice = {
@@ -118,7 +127,11 @@ export class InvoiceManager {
 				item.id === updatedItem.id
 					? {
 							...updatedItem,
-							total: updatedItem.quantity * updatedItem.unitPrice,
+							total: calculateLineItemTotal(
+								updatedItem.quantity,
+								updatedItem.unitPrice,
+								updatedItem.totalQuantity
+							),
 					  }
 					: item
 			),

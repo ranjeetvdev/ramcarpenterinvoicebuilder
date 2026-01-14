@@ -15,6 +15,9 @@ export interface LineItem {
 	quantity: number;
 	unitPrice: number;
 	total: number;
+	// New optional fields for enhanced functionality
+	unit?: string; // Unit of measurement (e.g., "sq ft", "ft", "NO", "piece")
+	totalQuantity?: number; // Optional total quantity for additional tracking
 }
 
 export interface Invoice {
@@ -117,19 +120,46 @@ export function validateLineItem(
 
 	// Unit price validation
 	if (typeof lineItem.unitPrice !== "number" || lineItem.unitPrice < 0) {
-		errors.push("Unit price must be a non-negative number");
+		errors.push("Rate must be a non-negative number");
 	}
 
-	// Total validation (if provided, should match quantity * unitPrice)
+	// Total validation (if provided, should match calculation logic)
 	if (
 		typeof lineItem.total === "number" &&
 		typeof lineItem.quantity === "number" &&
 		typeof lineItem.unitPrice === "number"
 	) {
-		const expectedTotal = lineItem.quantity * lineItem.unitPrice;
+		// Use totalQuantity if provided, otherwise use main quantity
+		const calculationQuantity =
+			lineItem.totalQuantity !== undefined
+				? lineItem.totalQuantity
+				: lineItem.quantity;
+		const expectedTotal = calculationQuantity * lineItem.unitPrice;
 		if (Math.abs(lineItem.total - expectedTotal) > 0.01) {
 			// Allow for small floating point differences
-			errors.push("Total must equal quantity multiplied by unit price");
+			const quantityUsed =
+				lineItem.totalQuantity !== undefined ? "total quantity" : "quantity";
+			errors.push(`Total must equal ${quantityUsed} multiplied by rate`);
+		}
+	}
+
+	// New validations for enhanced fields
+	// Unit validation (optional field)
+	if (lineItem.unit !== undefined) {
+		if (typeof lineItem.unit !== "string") {
+			errors.push("Unit must be a string");
+		} else if (lineItem.unit.length > 20) {
+			errors.push("Unit must be 20 characters or less");
+		}
+	}
+
+	// Total quantity validation (optional field)
+	if (lineItem.totalQuantity !== undefined) {
+		if (
+			typeof lineItem.totalQuantity !== "number" ||
+			lineItem.totalQuantity <= 0
+		) {
+			errors.push("Total quantity must be a positive number greater than 0");
 		}
 	}
 
